@@ -23,16 +23,18 @@ app.get('/urls', (req, res) => {
   res.render('pages/urls_index', tempVars);
 });
 
-app.get('/urls/:id', (req, res) => {
-  let tempVars = {shortURL: req.params.id}
-  res.render('pages/urls_show', tempVars);
-});
-
 app.get('/about', (req, res) => {
   res.render('pages/about');
 });
 
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
+});
 
+app.get('/urls/:id', (req, res) => {
+  let tempVars = {shortURL: req.params.id}
+  res.render('pages/urls_show', tempVars);
+});
 
 app.listen(port, () => {
   console.log(`Example server listening on port ${port}.`);
