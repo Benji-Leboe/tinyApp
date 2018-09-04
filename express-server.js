@@ -36,6 +36,11 @@ app.get('/urls/:id', (req, res) => {
   res.render('pages/urls_show', tempVars);
 });
 
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('Ok');
+})
+
 app.listen(port, () => {
   console.log(`TinyApp express server listening on port ${port}.`);
 });
