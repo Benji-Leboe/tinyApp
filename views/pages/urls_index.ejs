@@ -1,4 +1,4 @@
-<!-- views/pages/index.ejs -->
+<!-- views/pages/urls_index.ejs -->
 
 <!DOCTYPE <!DOCTYPE html>
 <html>
@@ -11,9 +11,13 @@
   </header>
   
   <main>
-    <div class="jumbotron">
-      <h1>TinyApp template</h1>
-      <p>Template for TinyApp development</p>
+    <div>
+        <ul>
+          <% for(let url in urls){ %>
+            <li><%= urls[url] %></li>
+          <% }; %>
+        </ul>
+        <a href='#'>Click here to shorten your URL!</a>
     </div>
   </main>
 

@@ -1,5 +1,3 @@
-<!-- views/pages/index.ejs -->
-
 <!DOCTYPE <!DOCTYPE html>
 <html>
 <head>
@@ -11,10 +9,11 @@
   </header>
   
   <main>
-    <div class="jumbotron">
-      <h1>TinyApp template</h1>
-      <p>Template for TinyApp development</p>
-    </div>
+    <form action="pages/urls" method="POST" style="margin:150px;">
+      <label for="longURL">Enter a URL:</label>
+      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
   </main>
 
   <footer>
