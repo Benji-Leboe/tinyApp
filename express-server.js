@@ -18,17 +18,17 @@ app.get('/', (req, res) => {
   res.render('pages/index');
 })
 
+app.get('/about', (req, res) => {
+  res.render('pages/about');
+});
+
 app.get('/urls', (req, res) => {
   let tempVars = {urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
-app.get('/about', (req, res) => {
-  res.render('pages/about');
-});
-
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  res.render('pages/urls_new');
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -37,5 +37,5 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example server listening on port ${port}.`);
+  console.log(`TinyApp express server listening on port ${port}.`);
 });
