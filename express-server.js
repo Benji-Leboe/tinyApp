@@ -1,10 +1,12 @@
 "use strict";
 
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const port = 8080;
 
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({extended: true}));
 
 let urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
