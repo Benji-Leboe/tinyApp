@@ -18,7 +18,7 @@ let urlDB = {
 function generateRandomString(){
   let string = "";
   for(let i = 0; i <= 6; i++){
-    string += Math.random().toString(36).substr(2, 15)
+    string += Math.random().toString(36).substr(2, 15);
   }
   return string.substr(1,6);
 }
@@ -86,7 +86,7 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie("username");
   res.redirect('/');
-})
+});
 
 app.get('/u/:shortURL', (req, res) => {
   //redirect to long URL from localhost:8080/u/shortURL
