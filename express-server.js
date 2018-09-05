@@ -13,6 +13,13 @@ let urlDB = {
   "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString(){
+  let string = '';
+  for(let i = 0; i <= 6; i++){
+    string += Math.random().toString(36).substr(2, 15)
+  }
+  return string.substr(1,6);
+}
 
 app.get('/', (req, res) => {
   res.render('pages/index');
@@ -32,15 +39,27 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  let tempVars = {shortURL: req.params.id}
+  //get url id
+  let tempVars = {url: req.params.id}
   res.render('pages/urls_show', tempVars);
 });
 
 app.post('/urls', (req, res) => {
   console.log(req.body);
   res.send('Ok');
-})
+});
+
+app.get('/u/:shortURL', (req, res) => {
+  let longURL = urlDB[req.params.shortURL];
+  if(!longURL){
+    res.statusCode = 404;
+    res.send("Invalid short URL\n");
+  }else{
+  res.redirect(longURL);
+  }
+});
 
 app.listen(port, () => {
   console.log(`TinyApp express server listening on port ${port}.`);
 });
+
