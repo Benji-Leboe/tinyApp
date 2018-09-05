@@ -22,14 +22,17 @@ function generateRandomString(){
 }
 
 app.get('/', (req, res) => {
+  //render index
   res.render('pages/index');
 })
 
 app.get('/about', (req, res) => {
+  //render about
   res.render('pages/about');
 });
 
 app.get('/urls', (req, res) => {
+  //render url index and display db contents
   let tempVars = {urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
@@ -40,18 +43,22 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   //get url id
-  let tempVars = {url: req.params.id}
+  let tempVars = {shortURL: req.params.id}
   res.render('pages/urls_show', tempVars);
 });
 
 app.post('/urls', (req, res) => {
+  //get longURL and append to DB with random gen key
   let urlString = req.body.longURL;
-  urlDB[generateRandomString()] = urlString;
-  res.send('Ok');
+  let randomString = generateRandomString();
+  urlDB[randomString] = urlString;
+  res.redirect(`/urls/${randomString}`);
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  //redirect to long URL from localhost:8080/u/shortURL
   let longURL = urlDB[req.params.shortURL];
+  //check for valid shortened URL
   if(!longURL){
     res.statusCode = 404;
     res.send("Invalid short URL\n");
