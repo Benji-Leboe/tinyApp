@@ -56,6 +56,12 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${randomString}`);
 });
 
+app.post('/urls/:id/delete', (req, res) => {
+  let urlID = req.params.id;
+  delete urlDB[urlID];
+  res.redirect('/urls');
+})
+
 app.get('/u/:shortURL', (req, res) => {
   //redirect to long URL from localhost:8080/u/shortURL
   let longURL = urlDB[req.params.shortURL];

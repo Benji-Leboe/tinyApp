@@ -23,7 +23,10 @@
               
               <ul class="list-group list-group-flush">
                 <% for(let url in urls){ %>
-                  <li class="list-group-item"><%= urls[url] %></li>
+                  <li class="list-group-item"><%= urls[url] %>: <%= url %></li>
+                  <form method="POST" action="/urls/<%= url %>/delete">
+                  <button type="submit" class="btn btn-sm">Delete</button>
+                  </form>
                 <% }; %>
               </ul>
             </div>
