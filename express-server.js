@@ -1,12 +1,14 @@
 "use strict";
 
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const app = express();
 const port = 8080;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 let urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -23,28 +25,32 @@ function generateRandomString(){
 
 app.get('/', (req, res) => {
   //render index
-  res.render('pages/index');
-})
+  let tempVars = {username: req.cookies["username"]};
+  res.render('pages/index', tempVars);
+});
 
 app.get('/about', (req, res) => {
   //render about
-  res.render('pages/about');
+  let tempVars = {username: req.cookies["username"]};
+  res.render('pages/about', tempVars);
 });
 
 app.get('/urls', (req, res) => {
   //render url index and display db contents
-  let tempVars = {urls: urlDB};
+  let tempVars = {username: req.cookies["username"], urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  res.render('pages/urls_new');
+  //render new URL page
+  let tempVars = {username: req.cookies["username"]};
+  res.render('pages/urls_new', tempVars);
 });
 
 app.get('/urls/:id', (req, res) => {
   //get url id
   let shortURLs = req.params.id;
-  let tempVars = {shortURL: shortURLs, longURL: urlDB[shortURLs]}
+  let tempVars = {username: req.cookies["username"], shortURL: shortURLs, longURL: urlDB[shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 
@@ -62,13 +68,24 @@ app.post('/urls/:id', (req, res) => {
   let newURL = req.body.longURL;
   urlDB[urlID] = `https://${newURL}`;
   res.redirect('/urls');
-})
+});
 
 app.post('/urls/:id/delete', (req, res) => {
   //delete URL
   let urlID = req.params.id;
   delete urlDB[urlID];
   res.redirect('/urls');
+});
+
+app.post('/login', (req, res) => {
+  let username = req.body.userLogin;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie("username");
+  res.redirect('/');
 })
 
 app.get('/u/:shortURL', (req, res) => {
