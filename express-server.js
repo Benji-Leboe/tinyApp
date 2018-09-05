@@ -51,7 +51,7 @@ app.post('/urls', (req, res) => {
   //get longURL and append to DB with random gen key
   let urlString = req.body.longURL;
   let randomString = generateRandomString();
-  urlDB[randomString] = urlString;
+  urlDB[randomString] = `http://${urlString}`;
   res.redirect(`/urls/${randomString}`);
 });
 
