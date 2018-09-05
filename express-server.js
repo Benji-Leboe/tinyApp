@@ -56,7 +56,16 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${randomString}`);
 });
 
+app.post('/urls/:id', (req, res) => {
+  //edit destination URL
+  let urlID = req.params.id;
+  let newURL = req.body.longURL;
+  urlDB[urlID] = `https://${newURL}`;
+  res.redirect('/urls');
+})
+
 app.post('/urls/:id/delete', (req, res) => {
+  //delete URL
   let urlID = req.params.id;
   delete urlDB[urlID];
   res.redirect('/urls');

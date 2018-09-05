@@ -24,8 +24,12 @@
               <ul class="list-group list-group-flush">
                 <% for(let url in urls){ %>
                   <li class="list-group-item mt-1 mb-1 pt-1 pb-1"><%= urls[url] %>: <%= url %></li>
+                  <form method="POST" action="/urls/<%= url %>">
+                    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+                    <button type="submit" class="btn btn-sm mt-1 mb-1 pt-1 pb-1">Edit URL</button>
+                  </form>
                   <form method="POST" action="/urls/<%= url %>/delete">
-                  <button type="submit" class="btn btn-sm mt-1 mb-1 pt-1 pb-1">Delete</button>
+                    <button type="submit" class="btn btn-sm mt-1 mb-1 pt-1 pb-1 float-right">Delete</button>
                   </form>
                 <% }; %>
               </ul>
