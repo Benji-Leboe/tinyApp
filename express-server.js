@@ -14,7 +14,7 @@ let urlDB = {
 };
 
 function generateRandomString(){
-  let string = '';
+  let string = "";
   for(let i = 0; i <= 6; i++){
     string += Math.random().toString(36).substr(2, 15)
   }
@@ -45,7 +45,8 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
-  console.log(req.body);
+  let urlString = req.body.longURL;
+  urlDB[generateRandomString()] = urlString;
   res.send('Ok');
 });
 
