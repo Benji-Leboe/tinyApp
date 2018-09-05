@@ -63,7 +63,8 @@ app.get('/u/:shortURL', (req, res) => {
     res.statusCode = 404;
     res.send("Invalid short URL\n");
   }else{
-  res.redirect(longURL);
+    res.statusCode = 302;
+    res.redirect(longURL);
   }
 });
 
