@@ -3,22 +3,42 @@
 <head>
   <% include ../partials/_head %>
 </head>
-<body class="container">
-  <header>
-    <% include ../partials/_header %>
-  </header>
+
+<body class="container-fluid">
+
+  <div class="container-fluid">
+
+    <div class="container-fluid">
+      <header>
+        <% include ../partials/_header %>
+      </header>
+    </div>
+    
+    <div class="container-fluid">
+      <main>
+        <div class="jumbotron">
+          <div class="row justify-content-center">
+            <form action="/urls" method="POST" style="margin:150px;">
+              <div class="form-group">
+                <label for="longURL">Enter a URL:</label>
+                <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+              </div>
+              <div class="row justify-content-center">
+                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
   
-  <main>
-    <form action="/urls" method="POST" style="margin:150px;">
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Submit">
-    </form>
-  </main>
-
-  <footer>
-    <% include ../partials/_footer %>
-  </footer>
-
+    <div class="container-fluid fixed-bottom">
+      <footer class="footer">
+        <% include ../partials/_footer %>
+      </footer>
+    </div>
+    
+  </div>
+  
 </body>
 </html>

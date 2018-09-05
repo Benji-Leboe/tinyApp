@@ -5,25 +5,43 @@
 <head>
   <% include ../partials/_head %>
 </head>
-<body class="container">
-  <header>
-    <% include ../partials/_header %>
-  </header>
-  
-  <main>
-    <div>
-        <ul>
-          <% for(let url in urls){ %>
-            <li><%= urls[url] %></li>
-          <% }; %>
-        </ul>
-        <a href='#'>Click here to shorten your URL!</a>
-    </div>
-  </main>
+<body class="container-fluid">
 
-  <footer>
-    <% include ../partials/_footer %>
-  </footer>
+  <div class="container-fluid">
+
+    <div class="container-fluid">
+      <header>
+        <% include ../partials/_header %>
+      </header>
+    </div>
+    
+    <div class="container-fluid">
+      <main>
+        <div class="jumbotron">
+            <p class="row justify-content-lg-center lead mt-2 mb-2">Currently shortened URLs:</p>
+            <div class="row justify-content-lg-center mt-5 mb-5">
+              
+              <ul class="list-group list-group-flush">
+                <% for(let url in urls){ %>
+                  <li class="list-group-item"><%= urls[url] %></li>
+                <% }; %>
+              </ul>
+            </div>
+            <div class="row justify-content-md-center mt-5 mb-5">
+              <a class="btn btn-primary btn-lg" href='urls/new'>Click here to shorten your URL!</a>
+            </div>
+            
+        </div>
+      </main>
+    </div>
+  
+    <div class="container-fluid fixed-bottom">
+      <footer class="footer">
+        <% include ../partials/_footer %>
+      </footer>
+    </div>
+
+  </div>
 
 </body>
 </html>

@@ -43,7 +43,8 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   //get url id
-  let tempVars = {shortURL: req.params.id}
+  let shortURLs = req.params.id;
+  let tempVars = {shortURL: shortURLs, longURL: urlDB[shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 

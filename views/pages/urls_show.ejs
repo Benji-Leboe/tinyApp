@@ -3,19 +3,33 @@
 <head>
   <% include ../partials/_head %>
 </head>
-<body class="container">
-  <header>
-    <% include ../partials/_header %>
-  </header>
+
+<body class="container-fluid">
+
+    <div class="container-fluid">
   
-  <main>
-    <h3>Shortened URL:</h3>
-    <p>http://localhost:8080/u/<%= shortURL %></p>
-  </main>
-
-  <footer>
-    <% include ../partials/_footer %>
-  </footer>
-
-</body>
+      <div class="container-fluid">
+        <header>
+          <% include ../partials/_header %>
+        </header>
+      </div>
+      
+      <div class="container-fluid">
+        <main>
+          <h3>Original URL:</h3>
+          <p><%= longURL %></p>
+          <h3>Shortened URL:</h3>
+          <p>http://localhost:8080/u/<%= shortURL %></p>
+        </main>
+      </div>
+    
+      <div class="container-fluid fixed-bottom">
+        <footer class="footer">
+          <% include ../partials/_footer %>
+        </footer>
+      </div>
+      
+    </div>
+  
+  </body>
 </html>

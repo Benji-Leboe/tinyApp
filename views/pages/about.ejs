@@ -5,21 +5,31 @@
 <head>
   <% include ../partials/_head %>
 </head>
-<body class="container">
-  <header>
-    <% include ../partials/_header %>
-  </header>
+<body class="container-fluid">
+
+    <div class="container-fluid">
   
-  <main>
-    <div class="jumbotron">
-      <h1>TinyApp template</h1>
-      <p>Template for TinyApp development</p>
+      <div class="container-fluid">
+        <header>
+          <% include ../partials/_header %>
+        </header>
+      </div>
+      
+      <div class="container-fluid">
+          <main>
+            <div class="jumbotron">
+              <p>PLACEHOLDER</p>
+            </div>
+          </main>
+      </div>
+    
+      <div class="container-fluid fixed-bottom">
+        <footer class="footer">
+          <% include ../partials/_footer %>
+        </footer>
+      </div>
+      
     </div>
-  </main>
-
-  <footer>
-    <% include ../partials/_footer %>
-  </footer>
-
-</body>
+  
+  </body>
 </html>
