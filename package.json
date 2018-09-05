@@ -9,8 +9,13 @@
     "ejs": "^2.6.1",
     "express": "^4.16.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jquery": "^3.3.1",
+    "nodemon": "^1.18.4",
+    "popper": "^1.0.1"
+  },
   "scripts": {
+    "start": "./node_modules/.bin/nodemon -L express_server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
