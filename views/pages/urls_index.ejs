@@ -18,14 +18,14 @@
     <div class="container-fluid">
       <main>
         <div class="jumbotron">
-            <p class="row justify-content-lg-center lead mt-2 mb-2">Currently shortened URLs:</p>
+            <p class="row justify-content-lg-center lead mt-2 mb-2 pt-1 pb-1">Currently shortened URLs:</p>
             <div class="row justify-content-lg-center mt-5 mb-5">
               
               <ul class="list-group list-group-flush">
                 <% for(let url in urls){ %>
-                  <li class="list-group-item"><%= urls[url] %>: <%= url %></li>
+                  <li class="list-group-item mt-1 mb-1 pt-1 pb-1"><%= urls[url] %>: <%= url %></li>
                   <form method="POST" action="/urls/<%= url %>/delete">
-                  <button type="submit" class="btn btn-sm">Delete</button>
+                  <button type="submit" class="btn btn-sm mt-1 mb-1 pt-1 pb-1">Delete</button>
                   </form>
                 <% }; %>
               </ul>
