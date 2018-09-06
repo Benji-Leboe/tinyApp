@@ -25,48 +25,60 @@ function generateRandomString(){
 
 app.get('/', (req, res) => {
   //render index
-  let tempVars = {username: req.cookies["username"]};
+  let tempVars = {username: req.cookies.username};
   res.render('pages/index', tempVars);
 });
 
 app.get('/about', (req, res) => {
   //render about
-  let tempVars = {username: req.cookies["username"]};
+  let tempVars = {username: req.cookies.username};
   res.render('pages/about', tempVars);
 });
 
 app.get('/urls', (req, res) => {
   //render url index and display db contents
-  let tempVars = {username: req.cookies["username"], urls: urlDB};
+  let tempVars = {username: req.cookies.username, urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
 app.get('/urls/new', (req, res) => {
   //render new URL page
-  let tempVars = {username: req.cookies["username"]};
+  let tempVars = {username: req.cookies.username};
   res.render('pages/urls_new', tempVars);
 });
 
 app.get('/urls/:id', (req, res) => {
   //get url id
   let shortURLs = req.params.id;
-  let tempVars = {username: req.cookies["username"], shortURL: shortURLs, longURL: urlDB[shortURLs]}
+  let tempVars = {username: req.cookies.username, shortURL: shortURLs, longURL: urlDB[shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 
 app.post('/urls', (req, res) => {
   //get longURL and append to DB with random gen key
-  let urlString = req.body.longURL;
+  let urlString = "";
+  let check = new RegExp('http');
+  if(check.test(req.body.longURL)){
+    urlString = req.body.longURL;
+  }else{
+    urlString = `http://${req.body.longURL}`
+  }
   let randomString = generateRandomString();
-  urlDB[randomString] = `http://${urlString}`;
+  urlDB[randomString] = urlString;
   res.redirect(`/urls/${randomString}`);
 });
 
 app.post('/urls/:id', (req, res) => {
   //edit destination URL
+  let newURL = "";
+  let check = new RegExp('http');
+  if(check.test(req.body.longURL)){
+    newURL = req.body.longURL;
+  }else{
+    newURL = `http://${req.body.longURL}`
+  }
   let urlID = req.params.id;
-  let newURL = req.body.longURL;
-  urlDB[urlID] = `https://${newURL}`;
+  urlDB[urlID] = newURL;
   res.redirect('/urls');
 });
 
