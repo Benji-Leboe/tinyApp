@@ -93,7 +93,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 app.post('/login', [
   //check for min username length
-  check('userLogin').isLength({min: 5})
+  check('userLogin').isLength({min: 2})
 ],(req, res) => {
   const errors = validationResult(req);
   if(!errors.isEmpty()){
