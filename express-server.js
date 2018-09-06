@@ -1,14 +1,16 @@
 "use strict";
 
+const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const express = require('express');
 const app = express();
 const port = 8080;
+const { check, validationResult } = require('express-validator/check');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
 
 let urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -89,7 +91,14 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', [
+  //check for min username length
+  check('userLogin').isLength({min: 5})
+],(req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    res.status(422).json({errors: errors.array()});
+  }
   let username = req.body.userLogin;
   res.cookie('username', username);
   res.redirect('/urls');
