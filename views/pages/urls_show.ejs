@@ -1,35 +1,62 @@
+<!--views/pages/urls_show-->
+
 <!DOCTYPE html>
 <html>
 <head>
   <% include ../partials/_head %>
 </head>
+<body class="pb-5">
 
-<body class="container-fluid">
+  <div class="container-fluid">
 
-    <div class="container-fluid">
-  
-      <div class="container-fluid">
-        <header>
-          <% include ../partials/_header %>
-        </header>
-      </div>
-      
-      <div class="container-fluid">
-        <main>
-          <h3>Original URL:</h3>
-          <p><%= longURL %></p>
-          <h3>Shortened URL:</h3>
-          <p>http://localhost:8080/u/<%= shortURL %></p>
-        </main>
-      </div>
+    <div class="container-fluid fixed-top">
+      <header>
+        <% include ../partials/_header %>
+      </header>
+    </div>
     
-      <div class="container-fluid fixed-bottom">
-        <footer class="footer">
-          <% include ../partials/_footer %>
-        </footer>
-      </div>
-      
+    <div class="container-fluid">
+      <main>
+        <div class="jumbotron">
+
+          <main>
+
+            <h1 class="row justify-content-lg-center mt-2 mb-2 pt-1 pb-1">Success!</h1>
+            <div class="row justify-content-lg-center mt-5 mb-5">
+              
+              <div class="list-group">
+                <div class="list-group-item">
+                  <h4>Original URL:</h4>
+                  <p><%= longURL %></p>
+                </div>
+                <div class="list-group-item">
+                  <h4>Shortened URL:</h4>
+                  <p>http://localhost:8080/u/<%= shortURL %></p>
+                </div>  
+              </div>
+
+            </div>
+            <div class="row justify-content-md-center mt-5 mb-5">
+              <a class="btn btn-primary btn-lg" href='/urls/new'>Click here to shorten another URL!</a>
+            </div>
+            <div class="row justify-content-md-center mt-5 mb-5">
+              <a class="" href="/urls">Click here to view your shortened URLs!</a>
+            </div>
+            
+
+          </main>
+          
+        </div>
+      </main>
     </div>
   
-  </body>
+    <div class="container-fluid fixed-bottom">
+      <footer class="footer">
+        <% include ../partials/_footer %>
+      </footer>
+    </div>
+
+  </div>
+
+</body>
 </html>
