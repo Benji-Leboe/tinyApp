@@ -1,5 +1,5 @@
 "use strict";
-
+//require dependencies
 const dotenv = require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const port = 8080;
 
-
+//configure app 
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -33,6 +33,9 @@ let userDB = {
   "userID": {id: 'userID', username: 'example', passwordHash: 'pword'}
 };
 
+//**functions**
+
+//random string gen for userID and short URL
 function generateRandomString(){
   let string = "";
   for(let i = 0; i <= 6; i++){
@@ -41,11 +44,13 @@ function generateRandomString(){
   return string.substr(1,6);
 }
 
+//function for adding user to DB
 function dbAdd(user, randomNum, longURL){
   urlDB[user][randomNum] = longURL;
 }
 
 //**GET routing**
+
 //render index
 app.get('/', (req, res) => {
   let tempVars = {user: userDB[req.session.user_id]};
@@ -99,7 +104,14 @@ app.get('/login', (req, res) => {
 //redirect to long URL from localhost:8080/u/shortURL
 //**TODO: LOOP THROUGH URLDB AND MATCH SHORT URL**
 app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDB[req.params.shortURL];
+  let shortURL = req.params.shortURL;
+  let longURL = '';
+  for(let user in urlDB){
+    let userObj = urlDB[user];
+    if(userObj.hasOwnProperty(shortURL)){
+      longURL = userObj[shortURL];
+    }
+  }
   //check for valid shortened URL
   if(!longURL){
     res.statusCode = 404;
@@ -135,6 +147,7 @@ app.post('/urls', (req, res) => {
 
 //edit destination URL
 app.post('/urls/:id', (req, res) => {
+  let userID = req.session.user_id;
   let newURL = "";
   //check if longURL is http format
   let check = new RegExp('http');
@@ -144,15 +157,15 @@ app.post('/urls/:id', (req, res) => {
     newURL = `http://${req.body.longURL}`
   }
   let urlID = req.params.id;
-  urlDB[urlID] = newURL;
+  urlDB[userID][urlID] = newURL;
   res.redirect('/urls');
 });
 
 //delete URL
 app.post('/urls/:id/delete', (req, res) => {
-  
+  let userID = req.session.user_id;
   let urlID = req.params.id;
-  delete urlDB[urlID];
+  delete urlDB[userID][urlID];
   res.redirect('/urls');
 });
 
@@ -161,11 +174,9 @@ app.post('/register', (req, res) => {
   let username = req.body.userLogin;
   let password = req.body.password;
   let passwordCheck = req.body.confirmPassword;
-  //check for errors
   //check for existing user
   for(let user in userDB) {
     if(user.username === username){
-      console.log("DB username:", user, "Check value:", username);
       errors = `"${username}" is already taken!`;
       res.statusCode = 400;
       res.render('pages/register', {errors: errors, username: undefined});
@@ -184,7 +195,7 @@ app.post('/register', (req, res) => {
     errors = 'Password and confirmation do not match!';
     res.render('pages/register', {errors: errors, username: undefined});
   }else{
-    //reset errors if conditions failed previously
+    //reset errors if conditions failed on previous attempts
     errors = undefined;
     //handle POST request
     //hash password
@@ -195,15 +206,13 @@ app.post('/register', (req, res) => {
     let id = generateRandomString();
     userDB[id] = {id, username, passwordHash};
     req.session.user_id = id;
-    console.log("Registration userDB:", userDB);
     res.redirect('/urls');
   }  
 });
 
-// **TODO: DEAL WITH PASSWORD FIELD, CHECK USERNAME AGAINST DB**
+//site login
 app.post('/login', (req, res) => {
 
-  //login to site
   let usernameInput = req.body.userLogin;
   let password = req.body.password;
   let hashCheck = undefined;
@@ -220,12 +229,9 @@ app.post('/login', (req, res) => {
     console.log("UserID and user:", user_id, user);
     if(user.username === usernameInput){
       isUser = true;
-      console.log("UserID:", user.id);
       //compare input password to DB hash
       
       hashCheck = bcrypt.compareSync(password, user.passwordHash);
-
-      console.log("hashcheck:", hashCheck);
       
       //eval hashCheck
       if(hashCheck === false){
@@ -249,7 +255,6 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   req.session = null;
   res.clearCookie("user_id");
-  console.log(userDB);
   res.redirect('/');
 });
 
