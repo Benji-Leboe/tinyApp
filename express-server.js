@@ -41,6 +41,10 @@ function generateRandomString(){
   return string.substr(1,6);
 }
 
+function dbAdd(user, randomNum, longURL){
+  urlDB[user][randomNum] = longURL;
+}
+
 //**GET routing**
 //render index
 app.get('/', (req, res) => {
@@ -57,7 +61,7 @@ app.get('/about', (req, res) => {
 //render url index and display db contents
 app.get('/urls', (req, res) => {
   let userID = req.session.user_id;
-  let tempVars = {user: userDB[userID], urls: urlDB[userID], dbUsers: urlDB};
+  let tempVars = {user: userDB[userID], urls: urlDB[userID]};
   res.render('pages/urls_index', tempVars);
 });
 
@@ -93,6 +97,7 @@ app.get('/login', (req, res) => {
 });
 
 //redirect to long URL from localhost:8080/u/shortURL
+//**TODO: LOOP THROUGH URLDB AND MATCH SHORT URL**
 app.get('/u/:shortURL', (req, res) => {
   let longURL = urlDB[req.params.shortURL];
   //check for valid shortened URL
@@ -106,9 +111,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 //POST routing
-function dbAdd(user, randomNum, longURL){
-  urlDB[user][randomNum] = longURL;
-}
+
 //get longURL and append to DB with random gen key
 app.post('/urls', (req, res) => {
   let userID = req.session.user_id;
@@ -185,15 +188,14 @@ app.post('/register', (req, res) => {
     errors = undefined;
     //handle POST request
     //hash password
-    let passwordHash = bcrypt.genSaltSync(10, (err, salt) => {
-      bcrypt.hash(password, salt, (err, hash) => {
-        return hash;
-      });
-    });
+    let salt = bcrypt.genSaltSync(10);
+    let passwordHash = bcrypt.hashSync(password, salt);
+    
     //Generate random ID and append user id, username and password hash to userDB
     let id = generateRandomString();
     userDB[id] = {id, username, passwordHash};
     req.session.user_id = id;
+    console.log("Registration userDB:", userDB);
     res.redirect('/urls');
   }  
 });
@@ -202,41 +204,44 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
 
   //login to site
-  let username = req.body.userLogin;
+  let usernameInput = req.body.userLogin;
   let password = req.body.password;
   let hashCheck = undefined;
-
+  let isUser = false;
   //check username length
-  if(username.length < 1){
+  if(usernameInput.length < 1){
     res.statusCode = 400;
     errors = 'Please enter a username.';
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
   }
   //check against existing username in userDB 
-  if(hashCheck === undefined){
-    for(let user in userDB) {
-      if(!user.hasOwnProperty(username)){
-        errors = 'Invalid username or password.';
+  for(let user_id in userDB) {
+    let user = userDB[user_id];
+    console.log("UserID and user:", user_id, user);
+    if(user.username === usernameInput){
+      isUser = true;
+      console.log("UserID:", user.id);
+      //compare input password to DB hash
+      
+      hashCheck = bcrypt.compareSync(password, user.passwordHash);
+
+      console.log("hashcheck:", hashCheck);
+      
+      //eval hashCheck
+      if(hashCheck === false){
         res.statusCode = 400;
+        errors = 'Invalid password.';
         res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
       }else{
-        //reset errors from unmet conditions and compare input password to DB hash
-        errors = undefined;
-        hashCheck = bcrypt.compareSync(password, user.passwordHash, (err, res) => {
-          return res;
-        });
+        req.session.user_id = user.id;
+        res.redirect('/urls');
       }
-    };
+    } 
   }
-
-  //evaluate hashCheck
-  if(hashCheck === false){
+  if(isUser === false){
+    errors = 'Invalid username.';
     res.statusCode = 400;
-    errors = 'Invalid username or password.';
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
-  }else{
-    req.session.user_id = id;
-    res.redirect('/urls');
   }
 });
 
@@ -244,6 +249,7 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   req.session = null;
   res.clearCookie("user_id");
+  console.log(userDB);
   res.redirect('/');
 });
 
