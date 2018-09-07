@@ -102,8 +102,8 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURLs = req.params.id;
-  let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]};
   if(userID){
+    let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]};
     res.render('pages/urls_show', tempVars);
   }else{
     errors = "You don't have access to this URL! Login below for access, or register to create your own!";
