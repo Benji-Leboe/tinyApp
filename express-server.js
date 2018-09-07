@@ -39,38 +39,38 @@ let errors = "";
 
 app.get('/', (req, res) => {
   //render index
-  let tempVars = {username: req.session.username};
+  let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/index', tempVars);
 });
 
 app.get('/about', (req, res) => {
   //render about
-  let tempVars = {username: req.session.username};
+  let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/about', tempVars);
 });
 
 app.get('/urls', (req, res) => {
   //render url index and display db contents
-  let tempVars = {username: req.session.username, urls: urlDB};
+  let tempVars = {user: userDB[req.session.user_id], urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
 app.get('/urls/new', (req, res) => {
   //render new URL page
-  let tempVars = {username: req.session.username};
+  let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/urls_new', tempVars);
 });
 
 app.get('/urls/:id', (req, res) => {
   //get url id
   let shortURLs = req.params.id;
-  let tempVars = {username: req.session.username, shortURL: shortURLs, longURL: urlDB[shortURLs]}
+  let tempVars = {user: userDB[req.session.user_id], shortURL: shortURLs, longURL: urlDB[shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 
 app.get('/register', (req, res) => {
   //render registration page
-  let tempVars = {username: req.session.username, errors: errors};
+  let tempVars = {user: userDB[req.session.user_id], errors: errors};
   res.render('pages/register', tempVars);
 });
 
@@ -127,50 +127,51 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 //User DB and POST register
-let userDB = [
-  {username: 'example', passwordHash: 'hashedPword'}
-];
+let userDB = {
+  "userID": {id: 'userID', username: 'example', passwordHash: 'hashedPword'}
+};
 
 app.post('/register', (req, res) => {
   let username = req.body.userLogin;
   let password = req.body.password;
-  let passwordCheck = req.body.passwordConfirmation;
+  let passwordCheck = req.body.confirmPassword;
   //check for errors
   
-  userDB.forEach((user) => {
+  for(let user in userDB) {
     if(user.username === username){
-      console.log("DB username:", user.username, "Check value:", username);
-      res.statusCode = 400;
+      console.log("DB username:", user, "Check value:", username);
       errors = `"${username}" is already taken!`;
-    }else if(username.length < 5){
-      console.log("Username must be at least 5 characters!");
       res.statusCode = 400;
-      errors = 'Username must be at least 5 characters!';
-    }
-    res.render('pages/register', {errors: errors, username: username});
-  });
-  if(password.length < 5){
+      res.render('pages/register', {errors: errors, username: undefined});
+    }  
+  };
+  if(username.length < 5){
+    console.log("Username must be at least 5 characters!");
+    errors = 'Username must be at least 5 characters!';
+  }else if(password.length < 5){
     console.log("Password must be at least 5 characters!");
     res.statusCode = 400;
     errors = 'Password must be at least 5 characters!';
-    res.render('/register', {errors: errors})
+    res.render('/register', {errors: errors, username: undefined});
   }else if(passwordCheck !== req.body.password) {
     console.log("Password:", req.body.password, "Confirmation:", passwordCheck);
     res.statusCode = 400;
     errors = 'Password and confirmation do not match!';
-    res.render('pages/register', {errors: errors, username: username})
+    res.render('pages/register', {errors: errors, username: undefined});
   }else{
+    errors = undefined;
     //handle POST request
     let passwordHash = bcrypt.genSaltSync(10, (err, salt) => {
       bcrypt.hash(password, salt, (err, hash) => {
         return hash;
       });
     });
-    
-    userDB.push({username, passwordHash});
-    res.session = username;
-    res.redirect('/');
-  } 
+    let id = generateRandomString();
+    userDB[id] = {id, username, passwordHash};
+    console.log(userDB);
+    req.session.user_id = id;
+    res.redirect('/urls');
+  }  
 });
 
 // **TODO: DEAL WITH PASSWORD FIELD, CHECK USERNAME AGAINST DB**
@@ -178,15 +179,15 @@ app.post('/login', (req, res) => {
   //login to site
   let username = req.body.userLogin;
   //check against existing username in userDB 
-  userDB.forEach((user) => {
+  for(let user in userDB) {
     if(username.length < 1){
       res.statusCode = 400;
       res.send('Please enter a username.')
-    }else if(username !== user.username){
+    }else if(username !== user){
       res.statusCode = 400;
       res.send('Username does not exist!');
     }
-  });
+  };
   res.session = username;
   res.redirect('/');
 });
