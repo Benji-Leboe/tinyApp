@@ -1,0 +1,56 @@
+<!-- views/pages/login -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/_head %>
+</head>
+
+<body class="pb-5">
+
+  <div class="container-fluid">
+
+    <div class="container-fluid">
+      <header>
+        <% include ../partials/_header %>
+      </header>
+    </div>
+    
+    <div class="container-fluid">
+      <main>
+        <div class="jumbotron">
+          <div class="row justify-content-center mt-5 pt-2">
+            <h3>Enter your Username and Password</h3>
+          </div>
+          <div class="row justify-content-center mt-2 pt-1">
+            <% if(errors){ %>
+              <p class="lead text-red"><%= errors %></p>
+            <% }else{ %>
+              <p class="lead">Enter your information below to login!</p>
+            <% } %>
+          </div>
+            
+          <div class="row justify-content-center">
+              <form method="POST" action="/login">
+                <div class="form-group pt-1 pb-1">
+                  <label for="userLogin" class="mr-1 pl-1">Login:</label>
+                  <input type="text" style="width: 250px" class="form-control mr-1 ml-1 pr-1 pl-1" id="userLogin" name="userLogin" placeholder="Username">
+                  <input type="text" style="width: 250px" class="form-control mr-1 ml-1 pr-1 pl-1" id="password" name="password" placeholder="Password">
+                  <button type="submit" class="btn btn-primary btn-md mr-2 ml-2">Submit</button>
+                </div>
+              </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  
+    <div class="container-fluid fixed-bottom">
+      <footer class="footer">
+        <% include ../partials/_footer %>
+      </footer>
+    </div>
+    
+  </div>
+  
+</body>
+</html>
