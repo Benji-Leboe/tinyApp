@@ -24,7 +24,7 @@
           </div>
           <div class="row justify-content-center mt-2 pt-1">
             <% if(errors){ %>
-              <p class="lead text-red"><%= errors %></p>
+              <p class="text-danger"><%= errors %></p>
             <% }else{ %>
               <p class="lead">Enter your information below to login!</p>
             <% } %>
@@ -39,6 +39,9 @@
                   <button type="submit" class="btn btn-primary btn-md mr-2 ml-2 mt-2 mb-2 pt-1 pb-1">Submit</button>
                 </div>
               </form>
+          </div>
+          <div class="row justify-content-center">
+            <p>Not signed up? <a href="/register">Click here to register!</a></p>
           </div>
         </div>
       </main>

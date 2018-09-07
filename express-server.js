@@ -48,6 +48,15 @@ function dbAdd(user, randomNum, longURL){
   urlDB[user][randomNum] = longURL;
 }
 
+//check for shortURL in DB
+function isInDB(shortURL, userID){
+  if(!userID){
+    return false;
+  }else{
+    return Object.values(urlDB[userID]).includes(shortURL);
+  }
+}
+
 //**GET routing**
 
 //render index
@@ -72,7 +81,8 @@ app.get('/urls', (req, res) => {
 //render new URL page
 app.get('/urls/new', (req, res) => {
   if(!req.session.user_id){
-    res.redirect('/');
+    errors = "Please login or register below to create a new URL!";
+    res.render('pages/login', {errors: errors, user: undefined});
   }else{
     let tempVars = {user: userDB[req.session.user_id]};
     res.render('pages/urls_new', tempVars);
@@ -83,8 +93,14 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURLs = req.params.id;
-  let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]}
-  res.render('pages/urls_show', tempVars);
+  console.log("IsInDB:", isInDB(shortURLs, userID));
+  if(userID && isInDB(shortURLs, userID)){
+    let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]};
+    res.render('pages/urls_show', tempVars);
+  }else{
+    errors = "You don't have access to this URL! Login below for access, or register to create your own!";
+    res.render('pages/login', {errors: errors, user: undefined});
+  }
 });
 
 //render registration page
