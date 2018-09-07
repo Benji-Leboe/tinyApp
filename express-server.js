@@ -1,6 +1,5 @@
 "use strict";
-//require dependencies
-const dotenv = require('dotenv').config();
+//require dependencies`
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
@@ -44,7 +43,7 @@ function generateRandomString(){
   return string.substr(1,6);
 }
 
-//function for adding user to DB
+//function for adding URL to DB
 function dbAdd(user, randomNum, longURL){
   urlDB[user][randomNum] = longURL;
 }
@@ -76,7 +75,6 @@ app.get('/urls/new', (req, res) => {
     res.redirect('/');
   }else{
     let tempVars = {user: userDB[req.session.user_id]};
-    console.log(urlDB);
     res.render('pages/urls_new', tempVars);
   }
 });
@@ -102,7 +100,6 @@ app.get('/login', (req, res) => {
 });
 
 //redirect to long URL from localhost:8080/u/shortURL
-//**TODO: LOOP THROUGH URLDB AND MATCH SHORT URL**
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = '';
@@ -129,19 +126,23 @@ app.post('/urls', (req, res) => {
   let userID = req.session.user_id;
   let urlString = "";
   let check = new RegExp('http');
-  //check if longURL is http format
-  if(check.test(req.body.longURL)){
+
+  //check if userID is undefined
+  if(!userID){
+    res.statusCode = 401;
+    res.send("You aren't logged in!");
+    //check if longURL is http format
+  }else if(check.test(req.body.longURL)){
     urlString = req.body.longURL;
   }else{
-    urlString = `http://${req.body.longURL}`
+    urlString = `http://${req.body.longURL}`;
   }
   let randomString = generateRandomString();
   if(urlDB[userID] === undefined){
-    urlDB[userID] = {[randomString]: urlString}
+    urlDB[userID] = {[randomString]: urlString};
   }else{
     dbAdd(userID, randomString, urlString);
   }
-  console.log(urlDB);
   res.redirect(`/urls/${randomString}`);
 });
 
@@ -154,7 +155,7 @@ app.post('/urls/:id', (req, res) => {
   if(check.test(req.body.longURL)){
     newURL = req.body.longURL;
   }else{
-    newURL = `http://${req.body.longURL}`
+    newURL = `http://${req.body.longURL}`;
   }
   let urlID = req.params.id;
   urlDB[userID][urlID] = newURL;
@@ -174,29 +175,35 @@ app.post('/register', (req, res) => {
   let username = req.body.userLogin;
   let password = req.body.password;
   let passwordCheck = req.body.confirmPassword;
+  let userExists = false;
   //check for existing user
   for(let user in userDB) {
     if(user.username === username){
-      errors = `"${username}" is already taken!`;
-      res.statusCode = 400;
-      res.render('pages/register', {errors: errors, username: undefined});
-    }  
+      userExists = true;
+      break;
+    }
   };
+  if(userExists){
+    errors = `"${username}" is already taken!`;
+    res.statusCode = 400;
+    res.render('pages/register', {errors: errors, user: undefined});
+  }
   //check for proper username and password format
   if(username.length < 5){
     res.statusCode = 400;
     errors = 'Username must be at least 5 characters!';
+    res.render('pages/register', {errors: errors, user: undefined});
   }else if(password.length < 5){
     res.statusCode = 400;
     errors = 'Password must be at least 5 characters!';
-    res.render('/register', {errors: errors, username: undefined});
+    res.render('pages/register', {errors: errors, user: undefined});
   }else if(passwordCheck !== req.body.password) {
     res.statusCode = 400;
     errors = 'Password and confirmation do not match!';
-    res.render('pages/register', {errors: errors, username: undefined});
+    res.render('pages/register', {errors: errors, user: undefined});
   }else{
     //reset errors if conditions failed on previous attempts
-    errors = undefined;
+    errors = '';
     //handle POST request
     //hash password
     let salt = bcrypt.genSaltSync(10);
@@ -215,7 +222,7 @@ app.post('/login', (req, res) => {
 
   let usernameInput = req.body.userLogin;
   let password = req.body.password;
-  let hashCheck = undefined;
+  let hashCheck = false;
   let isUser = false;
   //check username length
   if(usernameInput.length < 1){
@@ -226,7 +233,6 @@ app.post('/login', (req, res) => {
   //check against existing username in userDB 
   for(let user_id in userDB) {
     let user = userDB[user_id];
-    console.log("UserID and user:", user_id, user);
     if(user.username === usernameInput){
       isUser = true;
       //compare input password to DB hash
@@ -236,7 +242,7 @@ app.post('/login', (req, res) => {
       //eval hashCheck
       if(hashCheck === false){
         res.statusCode = 400;
-        errors = 'Invalid password.';
+        errors = 'Invalid username or password.';
         res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
       }else{
         req.session.user_id = user.id;
@@ -245,7 +251,7 @@ app.post('/login', (req, res) => {
     } 
   }
   if(isUser === false){
-    errors = 'Invalid username.';
+    errors = 'Invalid username or password.';
     res.statusCode = 400;
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
   }
