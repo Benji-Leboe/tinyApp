@@ -102,9 +102,8 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURLs = req.params.id;
-  console.log("IsInDB:", isInDB(shortURLs, userID));
-  if(userID && isInDB(shortURLs, userID)){
-    let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]};
+  let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]};
+  if(userID){
     res.render('pages/urls_show', tempVars);
   }else{
     errors = "You don't have access to this URL! Login below for access, or register to create your own!";
@@ -163,7 +162,7 @@ app.post('/urls', (req, res) => {
     urlString = `http://${req.body.longURL}`;
   }
   let randomString = generateRandomString();
-  if(urlDB[userID] === undefined){
+  if(!urlDB[userID]){
     urlDB[userID] = {[randomString]: urlString};
   }else{
     dbAdd(userID, randomString, urlString);
