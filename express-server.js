@@ -57,6 +57,15 @@ function isInDB(shortURL, userID){
   }
 }
 
+//check for user in userDB
+function isUser(username, userID){
+  if(!userID){
+    return false;
+  }else{
+    return Object.values(userDB[userID]).includes(username);
+  }
+}
+
 //**GET routing**
 
 //render index
