@@ -18,32 +18,52 @@
     <div class="container-fluid">
       <main>
         <div class="jumbotron">
+            <% if(user !== undefined){ %>
             <p class="row justify-content-lg-center lead mt-2 mb-2 pt-1 pb-1">Currently shortened URLs:</p>
-            <div class="row justify-content-lg-center mt-5 mb-5">
-              
-              <div class="list-group">
-                <% for(let url in urls){ %>
-                  <div class="row pt-2 pb-1 mt-2 mb-1">
-                      <div class="col">
-                        <form class="form-inline" method="POST" action="/urls/<%= url %>/delete">
-                          <dd class="text-truncate list-group-item mt-1 mb-1 pt-1 pb-1 pl-2" style="width: 315px; max-width: 315px">http://localhost:8080/u/<%= url %></dd>
-                          <button type="submit" class="btn btn-sm mt-1 mb-1 mr-1 ml-1 pt-1 pb-1 pr-1 pl-1">Delete</button>
-                        </form>
-                      </div>
-                  </div>
-                  <div class="row pb-2 mb-2">
-                      <div class="col">
-                          <form class="form-inline" method="POST" action="/urls/<%= url %>">
-                            <input id="longURL" type="text" data-lpignore="true" name="longURL" onfocus="this.select()" value="<%= urls[url] %>" style="width: 300px">
-                            <button type="submit" class="btn btn-sm mt-1 mb-1 mr-1 ml-1 pt-1 pb-1 pr-1 pl-1">Edit URL</button>
+            <div class="container-fluid justify-content-lg-center mt-5 mb-5">
+              <div class="row justify-content-center">
+                <div class="list-groups">
+                  <% for(let url in urls){ %>
+                    <div class="row pt-2 pb-1 mt-2 mb-1">
+                        <div class="col">
+                          <form class="form-inline" method="POST" action="/urls/<%= url %>/delete">
+                            <dd class="text-truncate list-group-item mt-1 mb-1 pt-1 pb-1 pl-2" style="width: 315px; max-width: 315px">http://localhost:8080/u/<%= url %></dd>
+                            <% if(Object.keys(dbUsers[user.id]).toString() === url){ %>
+                            <button type="submit" class="btn btn-sm mt-1 mb-1 mr-1 ml-1 pt-1 pb-1 pr-1 pl-1">Delete</button>
+                            <% } %>
                           </form>
-                      </div>
-                  </div>
-                <% }; %>
+                        </div>
+                    </div>
+                    
+                    <div class="row pb-2 mb-2">
+                        <div class="col">
+                            <form class="form-inline" method="POST" action="/urls/<%= url %>">
+                              <input id="longURL" type="text" data-lpignore="true" name="longURL" onfocus="this.select()" value="<%= urls[url] %>" style="width: 300px">
+                              <% if(Object.keys(dbUsers[user.id]).toString() === url){ %>
+                              <button type="submit" class="btn btn-sm mt-1 mb-1 mr-1 ml-1 pt-1 pb-1 pr-1 pl-1">Edit URL</button>
+                              <% } %>
+                            </form>
+                        </div>
+                    </div>
+                  <% }; %>
+                </div>
+                 
               </div>
-            </div>
-            <div class="row justify-content-md-center mt-5 mb-5">
-              <a class="btn btn-primary btn-lg" href='urls/new'>Click here to shorten your URL!</a>
+              <div class="row justify-content-md-center mt-5 mb-5">
+                  <a class="btn btn-primary btn-lg" href='urls/new'>Click here to shorten a URL!</a>
+              </div>
+            <% }else{ %>
+              <div class="row justify-content-lg-center mt-3 mb-3">
+                <h4>You aren't signed in!</h4>
+              </div>
+              
+                <p class="row justify-content-lg-center lead mt-2 mb-2 pt-1 pb-1">Log in or register to access your list of shortened URLs!</p>
+                <p class="row justify-content-lg-center mt-1 mb-1 pt-1 pb-1">Click below to sign up or log in:</p>
+              <div class="row justify-content-lg-center mt-3 mb-3">
+                <a class="btn btn-primary text-white ml-3 mr-3" href="/register">Sign Up!</a>
+                <a class="btn btn-primary text-white ml-3 mr-3" href="/login">Log In!</a>
+              </div>
+              <% } %>
             </div>
             
         </div>

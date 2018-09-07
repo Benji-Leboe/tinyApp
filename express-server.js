@@ -22,10 +22,10 @@ app.use(cookieSession({
 let errors = "";
 
 //**Databases**
+
 //URL DB
 let urlDB = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  userID: {"b2xVn2": "http://www.lighthouselabs.ca", "9sm5xK": "http://www.google.com"}
 };
 
 //User DB
@@ -56,20 +56,27 @@ app.get('/about', (req, res) => {
 
 //render url index and display db contents
 app.get('/urls', (req, res) => {
-  let tempVars = {user: userDB[req.session.user_id], urls: urlDB};
+  let userID = req.session.user_id;
+  let tempVars = {user: userDB[userID], urls: urlDB[userID], dbUsers: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
 //render new URL page
 app.get('/urls/new', (req, res) => {
-  let tempVars = {user: userDB[req.session.user_id]};
-  res.render('pages/urls_new', tempVars);
+  if(!req.session.user_id){
+    res.redirect('/');
+  }else{
+    let tempVars = {user: userDB[req.session.user_id]};
+    console.log(urlDB);
+    res.render('pages/urls_new', tempVars);
+  }
 });
 
 //get url id
 app.get('/urls/:id', (req, res) => {
+  let userID = req.session.user_id;
   let shortURLs = req.params.id;
-  let tempVars = {user: userDB[req.session.user_id], shortURL: shortURLs, longURL: urlDB[shortURLs]}
+  let tempVars = {user: userDB[userID], shortURL: shortURLs, longURL: urlDB[userID][shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 
@@ -99,9 +106,12 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 //POST routing
-
+function dbAdd(user, randomNum, longURL){
+  urlDB[user][randomNum] = longURL;
+}
 //get longURL and append to DB with random gen key
 app.post('/urls', (req, res) => {
+  let userID = req.session.user_id;
   let urlString = "";
   let check = new RegExp('http');
   //check if longURL is http format
@@ -111,7 +121,12 @@ app.post('/urls', (req, res) => {
     urlString = `http://${req.body.longURL}`
   }
   let randomString = generateRandomString();
-  urlDB[randomString] = urlString;
+  if(urlDB[userID] === undefined){
+    urlDB[userID] = {[randomString]: urlString}
+  }else{
+    dbAdd(userID, randomString, urlString);
+  }
+  console.log(urlDB);
   res.redirect(`/urls/${randomString}`);
 });
 

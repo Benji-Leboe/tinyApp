@@ -8,7 +8,9 @@
       <a class="nav-item nav-link active text-light" href="/">Home</a>
       <a class="nav-item nav-link text-light" href="/about">About</a>
       <a class="nav-item nav-link text-light" href="/urls">URLs</a>
-      <a class="nav-item nav-link text-light" href="/urls/new">Shorten URL</a>  
+      <% if(user !== undefined) { %>
+      <a class="nav-item nav-link text-light" href="/urls/new">Shorten URL</a>
+      <% } %>  
     </div>
 
     <!--Login form-->
