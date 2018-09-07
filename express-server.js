@@ -18,10 +18,19 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
+//error variable
+let errors = "";
 
+//**Databases**
+//URL DB
 let urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+//User DB
+let userDB = {
+  "userID": {id: 'userID', username: 'example', passwordHash: 'pword'}
 };
 
 function generateRandomString(){
@@ -32,50 +41,52 @@ function generateRandomString(){
   return string.substr(1,6);
 }
 
-//error variable
-let errors = "";
-
-//GET 
-
+//**GET routing**
+//render index
 app.get('/', (req, res) => {
-  //render index
   let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/index', tempVars);
 });
 
-app.get('/about', (req, res) => {
-  //render about
+//render about
+app.get('/about', (req, res) => { 
   let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/about', tempVars);
 });
 
+//render url index and display db contents
 app.get('/urls', (req, res) => {
-  //render url index and display db contents
   let tempVars = {user: userDB[req.session.user_id], urls: urlDB};
   res.render('pages/urls_index', tempVars);
 });
 
+//render new URL page
 app.get('/urls/new', (req, res) => {
-  //render new URL page
   let tempVars = {user: userDB[req.session.user_id]};
   res.render('pages/urls_new', tempVars);
 });
 
+//get url id
 app.get('/urls/:id', (req, res) => {
-  //get url id
   let shortURLs = req.params.id;
   let tempVars = {user: userDB[req.session.user_id], shortURL: shortURLs, longURL: urlDB[shortURLs]}
   res.render('pages/urls_show', tempVars);
 });
 
+//render registration page
 app.get('/register', (req, res) => {
-  //render registration page
   let tempVars = {user: userDB[req.session.user_id], errors: errors};
   res.render('pages/register', tempVars);
 });
 
+//render login page
+app.get('/login', (req, res) => {
+  let tempVars = {user: userDB[req.session.user_id], errors: errors};
+  res.render('pages/login', tempVars);
+});
+
+//redirect to long URL from localhost:8080/u/shortURL
 app.get('/u/:shortURL', (req, res) => {
-  //redirect to long URL from localhost:8080/u/shortURL
   let longURL = urlDB[req.params.shortURL];
   //check for valid shortened URL
   if(!longURL){
@@ -87,7 +98,7 @@ app.get('/u/:shortURL', (req, res) => {
   }
 });
 
-//POST
+//POST routing
 
 //get longURL and append to DB with random gen key
 app.post('/urls', (req, res) => {
@@ -127,11 +138,6 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-//User DB
-let userDB = {
-  "userID": {id: 'userID', username: 'example', passwordHash: 'hashedPword'}
-};
-
 //user registration
 app.post('/register', (req, res) => {
   let username = req.body.userLogin;
@@ -149,19 +155,18 @@ app.post('/register', (req, res) => {
   };
   //check for proper username and password format
   if(username.length < 5){
-    console.log("Username must be at least 5 characters!");
+    res.statusCode = 400;
     errors = 'Username must be at least 5 characters!';
   }else if(password.length < 5){
-    console.log("Password must be at least 5 characters!");
     res.statusCode = 400;
     errors = 'Password must be at least 5 characters!';
     res.render('/register', {errors: errors, username: undefined});
   }else if(passwordCheck !== req.body.password) {
-    console.log("Password:", req.body.password, "Confirmation:", passwordCheck);
     res.statusCode = 400;
     errors = 'Password and confirmation do not match!';
     res.render('pages/register', {errors: errors, username: undefined});
   }else{
+    //reset errors if conditions failed previously
     errors = undefined;
     //handle POST request
     //hash password
@@ -170,10 +175,9 @@ app.post('/register', (req, res) => {
         return hash;
       });
     });
+    //Generate random ID and append user id, username and password hash to userDB
     let id = generateRandomString();
-    //append user id, username and password hash to userDB
     userDB[id] = {id, username, passwordHash};
-    console.log(userDB);
     req.session.user_id = id;
     res.redirect('/urls');
   }  
@@ -181,15 +185,17 @@ app.post('/register', (req, res) => {
 
 // **TODO: DEAL WITH PASSWORD FIELD, CHECK USERNAME AGAINST DB**
 app.post('/login', (req, res) => {
+
   //login to site
   let username = req.body.userLogin;
   let password = req.body.password;
   let hashCheck = undefined;
+
   //check username length
   if(username.length < 1){
     res.statusCode = 400;
     errors = 'Please enter a username.';
-    res.render('/login', {errors: errors});
+    res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
   }
   //check against existing username in userDB 
   if(hashCheck === undefined){
@@ -197,8 +203,9 @@ app.post('/login', (req, res) => {
       if(!user.hasOwnProperty(username)){
         errors = 'Invalid username or password.';
         res.statusCode = 400;
-        res.render('/login', {errors: errors});
+        res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
       }else{
+        //reset errors from unmet conditions and compare input password to DB hash
         errors = undefined;
         hashCheck = bcrypt.compareSync(password, user.passwordHash, (err, res) => {
           return res;
@@ -207,20 +214,21 @@ app.post('/login', (req, res) => {
     };
   }
 
+  //evaluate hashCheck
   if(hashCheck === false){
     res.statusCode = 400;
     errors = 'Invalid username or password.';
-    res.render('/login', {errors: errors});
+    res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
   }else{
     req.session.user_id = id;
     res.redirect('/urls');
   }
 });
 
+//logout 
 app.post('/logout', (req, res) => {
-  //logout 
   req.session = null;
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect('/');
 });
 
