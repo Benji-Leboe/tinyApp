@@ -4,15 +4,12 @@
   "description": "TinyApp project for Week 2 at LHL",
   "main": "express-server.js",
   "dependencies": {
-    "bcrypt": "3.0.0",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.3",
     "cookie-parser": "^1.4.3",
-    "cookie-session": "^2.0.0-beta.3",
-    "dotenv": "^6.0.0",
     "ejs": "^2.6.1",
-    "express": "^4.16.3",
-    "popups": "^1.1.3"
+    "express": "^4.16.3"
   },
   "devDependencies": {
     "eslint": "^5.5.0",
