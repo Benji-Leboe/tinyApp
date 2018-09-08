@@ -14,6 +14,8 @@ It takes long URLs and shortens them, storing them in a database for later.
 
 - Users can create, edit, and delete shortened links at will.
 
+- Extremely long links will be truncated but still available to copy/select in their entirety on the URL index page
+
 ## Dependencies
 
 - Node.js
