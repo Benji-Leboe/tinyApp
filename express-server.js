@@ -1,5 +1,5 @@
 "use strict";
-//require dependencies`
+//require dependencies
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
@@ -32,7 +32,7 @@ let userDB = {
   "userID": {id: 'userID', username: 'example', passHash: 'pword'}
 };
 
-//**functions**
+//**helper functions**
 
 //random string gen for userID and short URL
 function generateRandomString(){
@@ -81,6 +81,11 @@ function isUser(user_id, username){
   return false;
 }
 
+//check for http prefix
+function httpCheck(url){
+  let check = new RegExp('http');
+  return check.test(url);
+}
 
 //hash password
 function passHasher(password){
@@ -185,14 +190,13 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls', (req, res) => {
   let userID = req.session.user_id;
   let urlString = "";
-  let check = new RegExp('http');
 
   //check if userID is undefined
   if(!userID){
     res.statusCode = 401;
     res.send("You aren't logged in!");
     //check if longURL is http format
-  }else if(check.test(req.body.longURL)){
+  }else if(httpCheck(req.body.longURL)){
     urlString = req.body.longURL;
   }else{
     urlString = `http://${req.body.longURL}`;
@@ -212,7 +216,7 @@ app.post('/urls/:id', (req, res) => {
   let newURL = "";
   //check if longURL is http format
   let check = new RegExp('http');
-  if(check.test(req.body.longURL)){
+  if(httpCheck(req.body.longURL)){
     newURL = req.body.longURL;
   }else{
     newURL = `http://${req.body.longURL}`;
@@ -259,7 +263,7 @@ app.post('/register', (req, res) => {
   }else{
     //reset errors if conditions failed on previous attempts
     errors = '';
-    let passHash = passHasher(password)
+    let passHash = passHasher(password);
     //handle POST request
     //Generate random ID and append user id, username and password hash to userDB
     let id = generateRandomString();
