@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const app = express();
 const port = 8080;
 
@@ -29,7 +29,7 @@ let urlDB = {
 
 //User DB
 let userDB = {
-  "userID": {id: 'userID', username: 'example', passwordHash: 'pword'}
+  "userID": {id: 'userID', username: 'example', passHash: 'pword'}
 };
 
 //**functions**
@@ -49,21 +49,52 @@ function dbAdd(user, randomNum, longURL){
 }
 
 //check for shortURL in DB
-function isInDB(shortURL, userID){
-  if(!userID){
-    return false;
-  }else{
-    return Object.values(urlDB[userID]).includes(shortURL);
+function urlInDB(shortURL){
+  for(let userID in urlDB){
+    let userObj = urlDB[userID];
+    if(userObj.hasOwnProperty(shortURL)){
+      return true;
+    }
   }
+  return false;
 }
 
-//check for user in userDB
-function isUser(username, userID){
-  if(!userID){
-    return false;
-  }else{
-    return Object.values(userDB[userID]).includes(username);
+//check for username in userDB
+function isUsername(username){
+  for(let userID in userDB){
+    let users = userDB[userID];
+    if(Object.values(users).includes(username)){
+      return true;
+    }
   }
+  return false;
+}
+
+function isUser(user_id, username){
+  for(let user in userDB){
+    let userID = userDB[user];
+    if(user_id === user && userID.username === username){
+      return true;
+    }
+  }
+  return false;
+}
+
+
+//hash password
+function passHasher(password){
+  let salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+}
+
+//compare input password to DB hash
+function hashCheck(password, hash){
+  return bcrypt.compareSync(password, hash);
+}
+
+//set cookie data
+function setCookie(req, option, param){
+  return req.session[option] = param;
 }
 
 //**GET routing**
@@ -199,15 +230,10 @@ app.post('/register', (req, res) => {
   let username = req.body.userLogin;
   let password = req.body.password;
   let passwordCheck = req.body.confirmPassword;
-  let userExists = false;
+
   //check for existing user
-  for(let user in userDB) {
-    if(user.username === username){
-      userExists = true;
-      break;
-    }
-  };
-  if(userExists){
+  
+  if(isUsername(username)){
     errors = `"${username}" is already taken!`;
     res.statusCode = 400;
     res.render('pages/register', {errors: errors, user: undefined});
@@ -228,15 +254,13 @@ app.post('/register', (req, res) => {
   }else{
     //reset errors if conditions failed on previous attempts
     errors = '';
+    let passHash = passHasher(password)
     //handle POST request
-    //hash password
-    let salt = bcrypt.genSaltSync(10);
-    let passwordHash = bcrypt.hashSync(password, salt);
-    
     //Generate random ID and append user id, username and password hash to userDB
     let id = generateRandomString();
-    userDB[id] = {id, username, passwordHash};
-    req.session.user_id = id;
+    userDB[id] = {id, username, passHash};
+
+    setCookie(req, 'user_id', id);
     res.redirect('/urls');
   }  
 });
@@ -244,12 +268,11 @@ app.post('/register', (req, res) => {
 //site login
 app.post('/login', (req, res) => {
 
-  let usernameInput = req.body.userLogin;
+  let username = req.body.userLogin;
   let password = req.body.password;
-  let hashCheck = false;
-  let isUser = false;
+  
   //check username length
-  if(usernameInput.length < 1){
+  if(username.length < 1){
     res.statusCode = 400;
     errors = 'Please enter a username.';
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
@@ -257,24 +280,22 @@ app.post('/login', (req, res) => {
   //check against existing username in userDB 
   for(let user_id in userDB) {
     let user = userDB[user_id];
-    if(user.username === usernameInput){
-      isUser = true;
-      //compare input password to DB hash
-      
-      hashCheck = bcrypt.compareSync(password, user.passwordHash);
-      
+    
+    if(isUser(user_id, username)){
       //eval hashCheck
-      if(hashCheck === false){
+      if(hashCheck(password, user.passHash)){
+        setCookie(req, 'user_id', user.id);
+        res.redirect('/urls');
+        break;
+      }else{
         res.statusCode = 400;
         errors = 'Invalid username or password.';
         res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
-      }else{
-        req.session.user_id = user.id;
-        res.redirect('/urls');
+        break;
       }
     } 
   }
-  if(isUser === false){
+  if(!isUsername(username)){
     errors = 'Invalid username or password.';
     res.statusCode = 400;
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
