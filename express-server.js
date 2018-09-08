@@ -103,6 +103,13 @@ function setCookie(req, option, param){
   return req.session[option] = param;
 }
 
+function isMinLength(input, length){
+  if(input.length > length){
+    return true;
+  }
+  return false;
+}
+
 //**GET routing**
 
 //render index
@@ -126,11 +133,11 @@ app.get('/urls', (req, res) => {
 
 //render new URL page
 app.get('/urls/new', (req, res) => {
-  if(!req.session.user_id){
+  if(req.session.user_id === undefined){
     errors = "Please login or register below to create a new URL!";
     res.render('pages/login', {errors: errors, user: undefined});
   }else{
-    let tempVars = {user: userDB[req.session.user_id]};
+    let tempVars = {user: userDB[req.session.user_id], errors: errors};
     res.render('pages/urls_new', tempVars);
   }
 });
@@ -157,11 +164,13 @@ app.get('/register', (req, res) => {
 //render login page
 app.get('/login', (req, res) => {
   errors = '';
+  console.log(req.session.user_id);
   if(req.session.user_id !== undefined){
     res.redirect('/urls');
+  }else{
+    let tempVars = {user: userDB[req.session.user_id], errors: errors};
+    res.render('pages/login', tempVars);
   }
-  let tempVars = {user: userDB[req.session.user_id], errors: errors};
-  res.render('pages/login', tempVars);
 });
 
 //redirect to long URL from localhost:8080/u/shortURL
@@ -190,24 +199,31 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls', (req, res) => {
   let userID = req.session.user_id;
   let urlString = "";
-
+  let randomString = generateRandomString();
+  errors = "";
+  
   //check if userID is undefined
   if(!userID){
     res.statusCode = 401;
-    res.send("You aren't logged in!");
+    errors = "You aren't logged in! Log in or register to add a URL.";
+    res.render('pages/login', {errors: errors, user: req.session.user_id});
     //check if longURL is http format
+  }else if(!isMinLength(req.body.longURL, 0)){
+    res.statusCode = 400;
+    res.redirect('/urls');
   }else if(httpCheck(req.body.longURL)){
     urlString = req.body.longURL;
-  }else{
+  }else if(!httpCheck(req.body.longURL)){
     urlString = `http://${req.body.longURL}`;
   }
-  let randomString = generateRandomString();
-  if(!urlDB[userID]){
+  
+  if(!urlDB[userID] && urlString){
     urlDB[userID] = {[randomString]: urlString};
-  }else{
+    res.redirect(`/urls/${randomString}`);
+  }else if(urlDB[userID] && urlString) {
     dbAdd(userID, randomString, urlString);
+    res.redirect(`/urls/${randomString}`);
   }
-  res.redirect(`/urls/${randomString}`);
 });
 
 //edit destination URL
@@ -215,8 +231,10 @@ app.post('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let newURL = "";
   //check if longURL is http format
-  let check = new RegExp('http');
-  if(httpCheck(req.body.longURL)){
+  if(!isMinLength(req.body.longURL, 0)){
+    res.statusCode = 400;
+    res.redirect('/urls');  
+  }else if(httpCheck(req.body.longURL)){
     newURL = req.body.longURL;
   }else{
     newURL = `http://${req.body.longURL}`;
@@ -246,13 +264,13 @@ app.post('/register', (req, res) => {
     errors = `"${username}" is already taken!`;
     res.statusCode = 400;
     res.render('pages/register', {errors: errors, user: undefined});
-  }
+  }else 
   //check for proper username and password format
-  if(username.length < 5){
+  if(!isMinLength(username, 4)){
     errors = 'Username must be at least 5 characters!';
     res.statusCode = 400;
     res.render('pages/register', {errors: errors, user: undefined});
-  }else if(password.length < 5){    
+  }else if(!isMinLength(password, 4)){    
     errors = 'Password must be at least 5 characters!';
     res.statusCode = 400;
     res.render('pages/register', {errors: errors, user: undefined});
@@ -280,13 +298,17 @@ app.post('/login', (req, res) => {
   let username = req.body.userLogin;
   let password = req.body.password;
   //check username length
-  if(username.length < 1){
+  if((!isMinLength(username, 0) || !isMinLength(password, 0))){
     res.statusCode = 400;
-    errors = 'Please enter a username.';
+    errors = 'Please enter a username and password.';
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
-  }
   //check against existing username in userDB 
-  for(let user_id in userDB) {
+  }else if(!isUsername(username)){
+    errors = 'Invalid username or password.';
+    res.statusCode = 400;
+    res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
+  }else{
+    for(let user_id in userDB) {
     let user = userDB[user_id];
     
     if(isUser(user_id, username)){
@@ -302,12 +324,8 @@ app.post('/login', (req, res) => {
         break;
       }
     } 
-  }
-  if(!isUsername(username)){
-    errors = 'Invalid username or password.';
-    res.statusCode = 400;
-    res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
-  }
+  }  
+}
 });
 
 //logout 

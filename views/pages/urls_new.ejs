@@ -23,7 +23,11 @@
           <div class="row justify-content-center mt-2 pt-1">
             <p class="lead">Adding "http://" is optional.</p>
           </div>
-            
+          <% if(errors){ %>
+            <div class="row justify-content-center mt-2 pt-1">
+              <p class="text-danger"><%= errors %></p>
+            </div>
+          <% } %>  
           <div class="row justify-content-center">
             <form class="form-inline" action="/urls" method="POST" style="margin:150px;">
               <div class="form-group">
