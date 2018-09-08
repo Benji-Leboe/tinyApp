@@ -152,6 +152,9 @@ app.get('/register', (req, res) => {
 //render login page
 app.get('/login', (req, res) => {
   errors = '';
+  if(req.session.user_id !== undefined){
+    res.redirect('/urls');
+  }
   let tempVars = {user: userDB[req.session.user_id], errors: errors};
   res.render('pages/login', tempVars);
 });
@@ -272,7 +275,6 @@ app.post('/login', (req, res) => {
 
   let username = req.body.userLogin;
   let password = req.body.password;
-  
   //check username length
   if(username.length < 1){
     res.statusCode = 400;
