@@ -70,6 +70,7 @@ function isUsername(username){
   return false;
 }
 
+//validates user
 function isUser(user_id, username){
   for(let user in userDB){
     let userID = userDB[user];
@@ -150,6 +151,7 @@ app.get('/register', (req, res) => {
 
 //render login page
 app.get('/login', (req, res) => {
+  errors = '';
   let tempVars = {user: userDB[req.session.user_id], errors: errors};
   res.render('pages/login', tempVars);
 });
@@ -165,12 +167,12 @@ app.get('/u/:shortURL', (req, res) => {
     }
   }
   //check for valid shortened URL
-  if(!longURL){
-    res.statusCode = 404;
-    res.send("Invalid short URL\n");
-  }else{
+  if(urlInDB(shortURL)){
     res.statusCode = 302;
     res.redirect(longURL);
+  }else{
+    res.statusCode = 404;
+    res.send("Invalid short URL. Please check your shortened URL and try again");
   }
 });
 
@@ -240,16 +242,16 @@ app.post('/register', (req, res) => {
   }
   //check for proper username and password format
   if(username.length < 5){
-    res.statusCode = 400;
     errors = 'Username must be at least 5 characters!';
-    res.render('pages/register', {errors: errors, user: undefined});
-  }else if(password.length < 5){
     res.statusCode = 400;
+    res.render('pages/register', {errors: errors, user: undefined});
+  }else if(password.length < 5){    
     errors = 'Password must be at least 5 characters!';
-    res.render('pages/register', {errors: errors, user: undefined});
-  }else if(passwordCheck !== req.body.password) {
     res.statusCode = 400;
+    res.render('pages/register', {errors: errors, user: undefined});
+  }else if(passwordCheck !== password) {
     errors = 'Password and confirmation do not match!';
+    res.statusCode = 400;
     res.render('pages/register', {errors: errors, user: undefined});
   }else{
     //reset errors if conditions failed on previous attempts
