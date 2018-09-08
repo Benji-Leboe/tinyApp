@@ -308,23 +308,23 @@ app.post('/login', (req, res) => {
     res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
   }else{
     for(let user_id in userDB) {
-    let user = userDB[user_id];
-    
-    if(isUser(user_id, username)){
-      //eval hashCheck
-      if(hashCheck(password, user.passHash)){
-        setCookie(req, 'user_id', user.id);
-        res.redirect('/urls');
-        break;
-      }else{
-        res.statusCode = 400;
-        errors = 'Invalid username or password.';
-        res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
-        break;
-      }
-    } 
-  }  
-}
+      let user = userDB[user_id];
+      
+      if(isUser(user_id, username)){
+        //eval hashCheck
+        if(hashCheck(password, user.passHash)){
+          setCookie(req, 'user_id', user.id);
+          res.redirect('/urls');
+          break;
+        }else{
+          res.statusCode = 400;
+          errors = 'Invalid username or password.';
+          res.render('pages/login', {user: userDB[req.session.user_id], errors: errors});
+          break;
+        }
+      } 
+    }  
+  }
 });
 
 //logout 
