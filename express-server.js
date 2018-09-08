@@ -164,7 +164,6 @@ app.get('/register', (req, res) => {
 //render login page
 app.get('/login', (req, res) => {
   errors = '';
-  console.log(req.session.user_id);
   if(req.session.user_id !== undefined){
     res.redirect('/urls');
   }else{
@@ -206,7 +205,7 @@ app.post('/urls', (req, res) => {
   if(!userID){
     res.statusCode = 401;
     errors = "You aren't logged in! Log in or register to add a URL.";
-    res.render('pages/login', {errors: errors, user: req.session.user_id});
+    res.render('pages/login', {errors: errors, user: undefined});
     //check if longURL is http format
   }else if(!isMinLength(req.body.longURL, 0)){
     res.statusCode = 400;
