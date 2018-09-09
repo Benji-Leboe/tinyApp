@@ -202,6 +202,9 @@ app.get('/urls/:id', (req, res) => {
 
 //render registration page
 app.get('/register', (req, res) => {
+  //set user_id to undefined to fix bug where if server was reset 
+  //while logged in user would appear to be logged out but user_id would persist
+  //causing redirect to /urls making links unavailable. Left condition in purposely
   setCookie(req, 'user_id', undefined);
   errors = '';
   if(req.session.user_id !== undefined){
@@ -214,6 +217,9 @@ app.get('/register', (req, res) => {
 
 //render login page
 app.get('/login', (req, res) => {
+  //set user_id to undefined to fix bug where if server was reset 
+  //while logged in user would appear to be logged out but user_id would persist
+  //causing redirect to /urls making links unavailable. Left condition in purposely
   setCookie(req, 'user_id', undefined);
   errors = '';
   if(req.session.user_id !== undefined){
