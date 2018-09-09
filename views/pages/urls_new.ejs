@@ -29,10 +29,10 @@
             </div>
           <% } %>  
           <div class="row justify-content-center">
-            <form class="form-inline" action="/urls" method="POST" style="margin:150px;">
+            <form class="form-inline" action="/urls" method="POST" autocomplete="off" style="margin:150px;">
               <div class="form-group">
                 <label class="mr-1 ml-1" for="longURL">Enter a URL:</label>
-                <input class="mr-1 ml-1" id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+                <input class="form-control mr-1 ml-1" id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
                 <button type="submit" class="btn btn-primary btn-sm mr-1 ml-1">Submit</button>
               </div>
             </form>
