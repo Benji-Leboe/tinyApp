@@ -4,15 +4,14 @@
 
 TinyApp was is a full-stack web app built by Benji Leboe for the first big project at Lighthouse Labs. It was built over the course of four days during the second week of the course.
 
-It takes long URLs and shortens them, storing them in a database for later. 
+It takes long URLs and shortens them, storing them in a database for later access. The shortened links are available for anyone to follow. 
 
 
 ## Features
 
-- Users can register for an account. Passwords are hashed with bcrypt and login information, along with a unique user ID, is stored in a database.
-
 ![loginpage](./screengrabs/login.png)
 
+- Users can register for an account. Passwords are hashed with bcrypt and login information, along with a unique user ID, is stored in a database.
 
 ![registerpage](./screengrabs/register.png)
 
@@ -26,9 +25,9 @@ It takes long URLs and shortens them, storing them in a database for later.
 
 - Extremely long links will be truncated but still available to copy/select in their entirety on the URL index page.
 
-- Included analytics features to track unique visits for each link as well as a list of visitors that follow your shortened URL links.
-
 ![mainindex](./screengrabs/newURLindex.png)
+
+- Included analytics features to track unique visits for each link as well as a list of visitors that follow your shortened URL links.
 
 ## Dependencies
 
