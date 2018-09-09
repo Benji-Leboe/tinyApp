@@ -68,7 +68,7 @@ function addVisitor(req){
 //add views to DB
 function viewDBAdd(urlID, value){
   if(!viewDB.hasOwnProperty(urlID)){
-    viewDB[urlID] = {views: 1, uniqueViews: 1};
+    viewDB[urlID] = {views: 0, uniqueViews: 0};
   }else{
     viewDB[urlID][value] += 1;
   }
@@ -263,9 +263,11 @@ app.post('/urls', (req, res) => {
   
   if(!urlDB[userID] && urlString){
     urlDB[userID] = {[randomString]: urlString};
+    viewDBAdd(randomString);
     res.redirect(`/urls/${randomString}`);
   }else if(urlDB[userID] && urlString) {
     dbAdd(userID, randomString, urlString);
+    viewDBAdd(randomString);
     res.redirect(`/urls/${randomString}`);
   }
 });
