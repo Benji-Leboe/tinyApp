@@ -22,6 +22,7 @@ app.use(cookieSession({
 //error variable
 let errors = "";
 
+
 //**Databases**
 
 //URL DB
@@ -29,12 +30,22 @@ let urlDB = {
   userID: {"b2xVn2": "http://www.lighthouselabs.ca", "9sm5xK": "http://www.google.com"}
 };
 
+//viewDB for analytics
+let viewDB = {
+  visitors: [],
+  urlID: {views: 0, uniqueViews: 0}
+}
+
 //User DB
 let userDB = {
   "userID": {id: 'userID', username: 'example', passHash: 'pword'}
 };
 
 //**helper functions**
+//set cookie data
+function setCookie(req, option, param){
+  return req.session[option] = param;
+}
 
 //random string gen for userID and short URL
 function generateRandomString(){
@@ -43,6 +54,34 @@ function generateRandomString(){
     string += Math.random().toString(36).substr(2, 15);
   }
   return string.substr(1,6);
+}
+
+// add to viewDB.visitor array
+function addVisitor(req){
+  viewDB.visitors.push({
+    user_id: req.session.user_id,
+    visitor_id: req.session.visitor_id,
+    timestamp: Date().toString(),
+  });
+}
+
+//add views to DB
+function viewDBAdd(urlID, value){
+  if(!viewDB.hasOwnProperty(urlID)){
+    viewDB[urlID] = {views: 1, uniqueViews: 1};
+  }else{
+    viewDB[urlID][value] += 1;
+  }
+}
+
+//count views and unique views
+function viewCounter(req, urlID){
+  if(req.session.isNew){
+    viewDBAdd(urlID, 'uniqueViews');
+    setCookie(req, 'visitor_id', generateRandomString());
+  }
+  viewDBAdd(urlID, 'views');
+  addVisitor(req);
 }
 
 //function for adding URL to DB
@@ -100,11 +139,7 @@ function hashCheck(password, hash){
   return bcrypt.compareSync(password, hash);
 }
 
-//set cookie data
-function setCookie(req, option, param){
-  return req.session[option] = param;
-}
-
+//check for min length
 function isMinLength(input, length){
   if(input.length > length){
     return true;
@@ -129,7 +164,7 @@ app.get('/about', (req, res) => {
 //render url index and display db contents
 app.get('/urls', (req, res) => {
   let userID = req.session.user_id;
-  let tempVars = {user: userDB[userID], urls: urlDB[userID]};
+  let tempVars = {user: userDB[userID], urls: urlDB[userID], viewDB: viewDB};
   res.render('pages/urls_index', tempVars);
 });
 
@@ -185,6 +220,7 @@ app.get('/login', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = '';
+  viewCounter(req, shortURL);
   for(let user in urlDB){
     let userObj = urlDB[user];
     if(userObj.hasOwnProperty(shortURL)){
@@ -338,8 +374,7 @@ app.post('/login', (req, res) => {
 
 //logout 
 app.post('/logout', (req, res) => {
-  req.session = null;
-  res.clearCookie("user_id");
+  setCookie(req, "user_id", undefined);
   res.redirect('/');
 });
 
