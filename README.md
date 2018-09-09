@@ -40,6 +40,11 @@ It takes long URLs and shortens them, storing them in a database for later.
 - body-parser
 - method-override
 
+##Extras
+
+- Using Bootstrap 4 CSS via CDN link in head
+- Using Popper.js via CDN for dropdown list of visitors
+
 ## Get Started
 
 - Clone repository to local drive
