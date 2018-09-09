@@ -6,7 +6,6 @@ TinyApp was is a full-stack web app built by Benji Leboe for the first big proje
 
 It takes long URLs and shortens them, storing them in a database for later. 
 
-![mainindex](./screengrabs/indexfull.png)
 
 ## Features
 
@@ -25,7 +24,11 @@ It takes long URLs and shortens them, storing them in a database for later.
 
 ![index](./screengrabs/index.png)
 
-- Extremely long links will be truncated but still available to copy/select in their entirety on the URL index page
+- Extremely long links will be truncated but still available to copy/select in their entirety on the URL index page.
+
+- Included analytics features to track unique visits for each link as well as a list of visitors that follow your shortened URL links.
+
+![mainindex](./screengrabs/newURLindex.png)
 
 ## Dependencies
 
@@ -35,6 +38,7 @@ It takes long URLs and shortens them, storing them in a database for later.
 - bcrypt
 - cookie-session
 - body-parser
+- method-override
 
 ## Get Started
 
