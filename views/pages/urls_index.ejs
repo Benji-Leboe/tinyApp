@@ -18,7 +18,27 @@
     <div class="container-fluid">
       <main>
         <div class="jumbotron">
-            <% if(user !== undefined){ %>
+          <% if(user !== undefined){ %>
+          <div class="dropdown">
+            <button class="btn btn-secondary btn-lg dropdown-toggle mt-2 pt-1 pb-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              View Visitors
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <% if(visitors.length > 0){ %>
+                <% visitors.forEach((visitor) => { %>
+                  <p class="dropdown-item">
+                    <% if(visitor.user_id !== undefined){ %>
+                      <%= visitor.user_id %>
+                    <% }else{ %>
+                      <%= visitor.visitor_id %>
+                    <% } %> @ <%= visitor.timestamp %>
+                    </p>
+                  <% }) %>
+                <% } else { %>
+                  <p class="dropdown-item">You haven't had any visitors!</p>
+                <% } %>
+              </div>
+            </div>
             <p class="row justify-content-lg-center lead mt-2 mb-2 pt-1 pb-1">Currently shortened URLs:</p>
             <div class="container-fluid justify-content-lg-center mt-5 mb-5">
               <div class="row justify-content-center">
@@ -80,6 +100,8 @@
     </div>
 
   </div>
-
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const popper = require('popper');
 const app = express();
 const port = 8080;
 
@@ -58,11 +59,19 @@ function generateRandomString(){
 
 // add to viewDB.visitor array
 function addVisitor(req){
-  viewDB.visitors.push({
-    user_id: req.session.user_id,
-    visitor_id: req.session.visitor_id,
-    timestamp: Date().toString(),
-  });
+  if(viewDB.visitors.length < 1){
+    viewDB.visitors.push({
+      user_id: req.session.user_id,
+      visitor_id: req.session.visitor_id,
+      timestamp: Date().toString()
+    });
+  }else{
+    viewDB.visitors.unshift({
+      user_id: req.session.user_id,
+      visitor_id: req.session.visitor_id,
+      timestamp: Date().toString()
+    });
+  }
 }
 
 //add views to DB
@@ -164,7 +173,7 @@ app.get('/about', (req, res) => {
 //render url index and display db contents
 app.get('/urls', (req, res) => {
   let userID = req.session.user_id;
-  let tempVars = {user: userDB[userID], urls: urlDB[userID], viewDB: viewDB};
+  let tempVars = {user: userDB[userID], urls: urlDB[userID], viewDB: viewDB, visitors: viewDB.visitors};
   res.render('pages/urls_index', tempVars);
 });
 
