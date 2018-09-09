@@ -1,6 +1,7 @@
 "use strict";
 //require dependencies
 const express = require('express');
+const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
@@ -12,6 +13,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.json());
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -226,7 +228,7 @@ app.post('/urls', (req, res) => {
 });
 
 //edit destination URL
-app.post('/urls/:id', (req, res) => {
+app.put('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let newURL = "";
   //check if longURL is http format
@@ -244,7 +246,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 //delete URL
-app.post('/urls/:id/delete', (req, res) => {
+app.delete('/urls/:id/delete', (req, res) => {
   let userID = req.session.user_id;
   let urlID = req.params.id;
   delete urlDB[userID][urlID];
