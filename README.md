@@ -2,7 +2,7 @@
 
 ### Overview
 
-TinyApp was is a full-stack web app built by Benji Leboe for the first big project at Lighthouse Labs. The core requirements were built over the course of four days during the second week of the course. Stretch features were implemented Saturday.
+TinyApp is a full-stack web app built by Benji Leboe for the first big project at Lighthouse Labs. The core requirements were built over the course of four days during the second week of the course. Stretch features were implemented Saturday.
 
 It takes long URLs and shortens them, storing them in a database for later access. The shortened links are available for anyone to follow. 
 
