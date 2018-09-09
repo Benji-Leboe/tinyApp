@@ -9,11 +9,11 @@ It takes long URLs and shortens them, storing them in a database for later acces
 
 ## Features
 
-![loginpage](./screengrabs/login.png)
+![registerpage](./screengrabs/register.png)
 
 - Users can register for an account. Passwords are hashed with bcrypt and login information, along with a unique user ID, is stored in a database.
 
-![registerpage](./screengrabs/register.png)
+![loginpage](./screengrabs/login.png)
 
 - Shortened URLs are only available to the registered users that created them. Users must be logged in to view their list of short URLs. Shortened links, however, are useable by anyone that they are shared with.
 
