@@ -157,12 +157,19 @@ app.get('/urls/:id', (req, res) => {
 
 //render registration page
 app.get('/register', (req, res) => {
-  let tempVars = {user: userDB[req.session.user_id], errors: errors};
-  res.render('pages/register', tempVars);
+  setCookie(req, 'user_id', undefined);
+  errors = '';
+  if(req.session.user_id !== undefined){
+    res.redirect('/urls');
+  }else{
+    let tempVars = {user: userDB[req.session.user_id], errors: errors};
+    res.render('pages/register', tempVars);
+  }
 });
 
 //render login page
 app.get('/login', (req, res) => {
+  setCookie(req, 'user_id', undefined);
   errors = '';
   if(req.session.user_id !== undefined){
     res.redirect('/urls');
@@ -253,6 +260,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 //user registration
 app.post('/register', (req, res) => {
+  
   let username = req.body.userLogin;
   let password = req.body.password;
   let passwordCheck = req.body.confirmPassword;
@@ -293,7 +301,6 @@ app.post('/register', (req, res) => {
 
 //site login
 app.post('/login', (req, res) => {
-
   let username = req.body.userLogin;
   let password = req.body.password;
   //check username length
