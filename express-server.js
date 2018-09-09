@@ -5,7 +5,6 @@ const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const popper = require('popper');
 const app = express();
 const port = 8080;
 
