@@ -93,8 +93,12 @@ function viewCounter(req, urlID){
 }
 
 //function for adding URL to DB
-function dbAdd(user, randomNum, longURL){
-  urlDB[user][randomNum] = longURL;
+function dbAddURL(user, randomNum, longURL){
+  if(!urlDB[user]){
+    urlDB[user] = {[randomNum]: longURL};
+  }else{
+    urlDB[user][randomNum] = longURL;
+  }
 }
 
 //check for shortURL in DB
@@ -275,12 +279,8 @@ app.post('/urls', (req, res) => {
     urlString = `http://${req.body.longURL}`;
   }
   
-  if(!urlDB[userID] && urlString){
-    urlDB[userID] = {[randomString]: urlString};
-    viewDBAdd(randomString);
-    res.redirect(`/urls/${randomString}`);
-  }else if(urlDB[userID] && urlString) {
-    dbAdd(userID, randomString, urlString);
+  if(urlString){
+    dbAddURL(userID, randomString, urlString);
     viewDBAdd(randomString);
     res.redirect(`/urls/${randomString}`);
   }
