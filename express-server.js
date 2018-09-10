@@ -275,7 +275,7 @@ app.post('/urls', (req, res) => {
     res.redirect('/urls');
   }else if(httpCheck(req.body.longURL)){
     urlString = req.body.longURL;
-  }else if(!httpCheck(req.body.longURL)){
+  }else{
     urlString = `http://${req.body.longURL}`;
   }
   
