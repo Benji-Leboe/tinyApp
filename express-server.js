@@ -390,7 +390,7 @@ app.post('/login', (req, res) => {
 
 //logout 
 app.post('/logout', (req, res) => {
-  setCookie(req, "user_id", undefined);
+  req.session = null;
   res.redirect('/');
 });
 
